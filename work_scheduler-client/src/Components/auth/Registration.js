@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import {userHistory} from "react-router-dom";
+// import {userHistory} from "react-router-dom";
 
 
-function Registration () {
+function Registration ({sendToManagers, sendToStaffs}) {
 
     const [registration, setRegistration] = useState({
             first_name: "",
@@ -31,29 +31,17 @@ function Registration () {
 
     function handleSubmit(e){
         e.preventDefault();
- 
-        fetch("http://localhost:4000/sessions", {
-         method: "POST",
-         headers: {
-             "Content-Type": "application/json",
-     },
-         body: JSON.stringify({
-         name: registration.name,
-             }),
-         })
-     { withCredentials: true }
-     .then((r) => r.json())
-     .then((submit) => {
-         onAddUser(submit);
-         history.push("/");
-     })
-         .catch((error) => {
-             alert("Please check your inputs", error)
-         });
- 
+        
+        if (registration.password === registration.password_confirmation && regist && registration.is_manager){
+            sendToManagers();
+        } else if (registration.password === registration.password_confirmation && !registration.is_manager){
+            sendToStaffs();
+        } else {
+            alert("Please check your inputs")
+        }
     }
 
-
+    
     return (
         <div>
             <form onSubmit={handleSubmit}>

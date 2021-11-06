@@ -6,23 +6,8 @@ class ApplicationController < Sinatra::Base
     { message: "Good luck with your project!" }.to_json
   end
 
-  get '/managers' do
-    managers = Manager.all
-    managers.to_json
-  end
-
-  # get "/managers/:id" do
-  #   manager = Managers.find_by(params[:id])
-  #   manager.to_json(only: [:first_name, :last_name, :department, :id, :email, :username], include: {
-  #     work_days: { only: [:day], include: {
-  #       staffs: {only: [:first_name, :last_name, :paid_rate, :department, :username, :email, :password]}
-  #     }}
-  #   })
-  # end
-
-  get "/users" do
-    users = User.all
-    users.to_json
+  get '/users' do
+    User.all.to_json(only: [:first_name, :last_name, :department, :id, :email, :username, :password, :is_manager])
   end
 
   get "/users/:username" do
@@ -67,13 +52,28 @@ class ApplicationController < Sinatra::Base
     user.to_json
   end
 
-  post '/managers' do
+  get "/managers" do
+    Manager.all.to_json
+  end
+
+  get "/managers/:id" do
+    manager = Manager.find_by(params[:id])
+    manager.to_json(only: [:first_name, :last_name, :department, :id, :email, :username, :password, :user_id], include: {
+      work_days: { only: [:day], include: {
+        staffs: {only: [:first_name, :last_name, :paid_rate, :department, :username, :email, :password, :user_id]}
+      }}
+    })
+  end
+
+  post "/managers" do
     managers = Manager.create(
       first_name: params[:first_name],
       last_name: params[:last_name],
       department: params[:department],
+      username: params[:username],
       email: params[:email],
-      password: params[:password]
+      password: params[:password],
+      is_manager: params[:is_manager]
     )
     managers.to_json
   end
@@ -86,7 +86,8 @@ class ApplicationController < Sinatra::Base
       department: params[:department],
       username: params[:username],
       email: params[:email],
-      password: params[:password]
+      password: params[:password],
+      is_manager: params[:is_manager]
     )
   end
 
@@ -100,14 +101,9 @@ class ApplicationController < Sinatra::Base
     staffs = Manager.all
     staffs.to_json
   end
-
-  # get '/staffs/who_is_my_boss' do
-  #   staff = Staff.who_is_my_boss
-  #   staff.to_json
-  # end
   
-  get "/staffs/:email" do
-    staff = Staff.find_by(params[:email])
+  get "/staffs/:id" do
+    staff = Staff.find_by(params[:id])
     if staff
       staff.to_json
     else
@@ -117,11 +113,12 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/staffs' do
-    staffs = Manager.create(
+    staffs = Staff.create(
       first_name: params[:first_name],
       last_name: params[:last_name],
       paid_rate: params[:paid_rate],
       department: params[:department],
+      is_manager: params[:is_manager],
       username: params[:username],
       email: params[:email],
       password: params[:password]
@@ -130,12 +127,13 @@ class ApplicationController < Sinatra::Base
   end
 
   patch '/staffs/:id' do
-    staffs = Manager.find(params[:id])
+    staffs = Staff.find(params[:id])
     staffs.update(
       first_name: params[:first_name],
       last_name: params[:last_name],
       paid_rate: params[:paid_rate],
       department: params[:department],
+      is_manager: params[:is_manager],
       username: params[:username],
       email: params[:email],
       password: params[:password]
@@ -143,7 +141,7 @@ class ApplicationController < Sinatra::Base
   end
 
   delete '/staffs/:id' do
-    staffs = Manager.find(params[:id])
+    staffs = Staff.find(params[:id])
     staffs.destroy
     staffs.to_json
   end

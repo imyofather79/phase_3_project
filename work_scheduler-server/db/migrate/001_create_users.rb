@@ -1,7 +1,4 @@
 class CreateUsers < ActiveRecord::Migration[6.1]
-    has_many :managers
-    has_many :staffs
-
     def change
         create_table :users do |m|
             m.string :first_name
