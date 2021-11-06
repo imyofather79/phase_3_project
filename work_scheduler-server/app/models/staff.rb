@@ -1,6 +1,7 @@
 class Staff < ActiveRecord::Base
     has_many :work_days 
     has_many :managers, through: :work_days
+    belongs_to :user
 
     def full_name
         self.first_name + " " + self.last_name
