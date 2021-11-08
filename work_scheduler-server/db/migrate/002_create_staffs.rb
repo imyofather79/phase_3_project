@@ -1,7 +1,7 @@
 class CreateStaffs < ActiveRecord::Migration[6.1]
     def change
         create_table    :staffs do |s|
-            s.belongs_to :user, foreign_key: true
+            s.integer   :user_id
             s.string    :first_name
             s.string    :last_name
             s.integer   :paid_rate
@@ -9,7 +9,7 @@ class CreateStaffs < ActiveRecord::Migration[6.1]
             s.string    :username
             s.string    :email
             s.string    :password
-            s.boolean :is_manager
+            s.boolean   :is_manager
             s.timestamps
         end
     end

@@ -31,33 +31,60 @@ class ApplicationController < Sinatra::Base
     user.to_json
   end
 
-  post '/registration/signup' do
-      user = User.last
-      if !!user.is_manager
-        manager = Manager.create(
-            first_name: params[:first_name],
-            last_name: params[:last_name],
-            department: params[:department],
-            username: params[:username],
-            email: params[:email],
-            password: params[:password],
-            is_manager: params[:is_manager]
-        )
-        manager.to_json
-      else 
-        staff = Staff.create(
-            first_name: params[:first_name],
-            last_name: params[:last_name],
-            department: params[:department],
-            paid_rate: params[:paid_rate],
-            username: params[:username],
-            email: params[:email],
-            password: params[:password],
-            is_manager: params[:is_manager]
-      )
-      staff.to_json
-      end
-  end
+  # post '/registration/signup' do
+  #     user = User.last
+  #     if !user.is_manager
+  #       staff = Staff.create(
+  #         first_name: params[:first_name],
+  #         last_name: params[:last_name],
+  #         department: params[:department],
+  #         paid_rate: params[:paid_rate],
+  #         username: params[:username],
+  #         email: params[:email],
+  #         password: params[:password],
+  #         is_manager: params[:is_manager]
+  #   )
+  #   staff.to_json
+
+  #     else 
+  #       manager = Manager.create(
+  #           first_name: params[:first_name],
+  #           last_name: params[:last_name],
+  #           department: params[:department],
+  #           user_id: params[:user_id],
+  #           username: params[:username],
+  #           email: params[:email],
+  #           password: params[:password],
+  #           is_manager: params[:is_manager]
+  #       )
+  #       manager.to_json
+  #     end
+  #     if user.is_manager == true
+  #       manager = Manager.create(
+  #           first_name: params[:first_name],
+  #           last_name: params[:last_name],
+  #           department: params[:department],
+  #           user_id: params[:user_id],
+  #           username: params[:username],
+  #           email: params[:email],
+  #           password: params[:password],
+  #           is_manager: params[:is_manager]
+  #       )
+  #       manager.to_json
+  #     else 
+  #       staff = Staff.create(
+  #           first_name: params[:first_name],
+  #           last_name: params[:last_name],
+  #           department: params[:department],
+  #           paid_rate: params[:paid_rate],
+  #           username: params[:username],
+  #           email: params[:email],
+  #           password: params[:password],
+  #           is_manager: params[:is_manager]
+  #     )
+  #     staff.to_json
+  #     end
+  # end
 
   get '/sessions/login' do
     # erb :'sessions/login'
@@ -195,6 +222,7 @@ class ApplicationController < Sinatra::Base
       first_name: params[:first_name],
       last_name: params[:last_name],
       department: params[:department],
+      user_id: params[:user_id],
       username: params[:username],
       email: params[:email],
       password: params[:password],
@@ -238,17 +266,18 @@ class ApplicationController < Sinatra::Base
      })
   end
 
-  # create
-  post '/staffs' do
+
+  post "/staffs" do
     staffs = Staff.create(
       first_name: params[:first_name],
       last_name: params[:last_name],
-      paid_rate: params[:paid_rate],
       department: params[:department],
-      is_manager: params[:is_manager],
+      paid_rate: params[:paid_rate],
+      user_id: params[:user_id],
       username: params[:username],
       email: params[:email],
-      password: params[:password]
+      password: params[:password],
+      is_manager: params[:is_manager]
     )
     staffs.to_json
   end

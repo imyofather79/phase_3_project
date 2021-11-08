@@ -1,7 +1,7 @@
 class CreateManagers < ActiveRecord::Migration[6.1]
     def change
         create_table :managers do |m|
-            m.belongs_to :user, foreign_key: true
+            m.integer :user_id
             m.string :first_name
             m.string :last_name
             m.string :department

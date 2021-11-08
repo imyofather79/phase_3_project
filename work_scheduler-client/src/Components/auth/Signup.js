@@ -4,31 +4,32 @@ import { Route, Switch, useHistory } from "react-router-dom";
 
 function Signup({onAddUser, handleRemove}) {
 
-    const [registerData, setRegisterData] = useState({})
-    // const [users, setUsers] = useState({})
+    const [registerData, setRegisterData] = useState({});
     const history = useHistory();
-        
 
     useEffect(() => {
-        fetch("http://localhost:9393/registration/signup")
-        .then((r) => r.json())
-        .then(registerData)
-    }, [])
-
-
-    console.log(registerData)
-
+        const url = "http://localhost:9393/registration/signup";
+        const fetchData = async () => {
+            try {
+                const response = await fetch(url);
+                const json = await response.json();
+                setRegisterData(json);
+            } catch (error) {
+                console.log("error", error);
+            }
+        };
+        fetchData();
+    }, []);
 
     function handleChange(e){
         setRegisterData({
             ...registerData,
+            user_id: registerData.id,
             [e.target.name]: e.target.value
         });
     }
+
     function sendToManagers(registerData){
-    // let params = {
-    //     ...registerData
-    // };
     fetch("http://localhost:9393/managers", {
     method: "POST",
     headers: {
@@ -39,17 +40,14 @@ function Signup({onAddUser, handleRemove}) {
     })
         .then((r) => r.json())
         .then(registerData => {
-          onAddUser(registerData);
+        
+            onAddUser(registerData);
         },
-        history.push(`/user/home/${registerData.user_id}`)
+        history.push(`/user/home/${registerData.id}`)
         )
-        // sendToUsers(registerData);
   };
 
   function sendToStaffs(registerData){
-    // let params = {
-    //     ...registerData
-    // };
     fetch("http://localhost:9393/staffs", {
     method: "POST",
     headers: {
@@ -62,50 +60,20 @@ function Signup({onAddUser, handleRemove}) {
         .then(registerData => {
           onAddUser(registerData);
         },
-        history.push(`/user/home/${registerData.user_id}`)
+        history.push(`/user/home/${registerData.id}`)
         )
-        // sendToUsers(registerData);
   };   
   
 
     function handleSubmit(e){
         e.preventDefault();
-
-        fetch("http://localhost:9393/registration/sigup", {
-            method: "GET",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                },
-            body: JSON.stringify(registerData),
-            })
-                .then((r) => r.json())
-                .then(registerData => {
-                //   onAddUser(registerData);
-                // },
-                // history.push("/users/home")
-                // )
-                if (registerData.is_manager){
-                    sendToManagers(registerData);
-                } else {
-                    sendToStaffs(registerData);
-                } 
-                // if (registerData.password === registerData.password_confirmation && registerData.is_manager){
-                //     sendToManagers();
-                // } else if (registerData.password === registerData.password_confirmation && !registerData.is_manager){
-                //     sendToStaffs();
-                // } else {
-                //     alert("Please check your inputs")
-                // }
-                },
-                history.push("/")
-                )
+        let sup = registerData.is_manager
+        if (sup){
+            sendToManagers(registerData);
+        } else {
+            sendToStaffs(registerData);
+        } 
     }
-    
-    // function onDeleteClick(deleteUser){
-    //     const clear = registerData 
-    // }
-
 
     function handleDelete(e){
         e.preventDefault();
@@ -140,56 +108,60 @@ function Signup({onAddUser, handleRemove}) {
                     placeholder="Your last name here..."
                 />
                 <br />
+                <select 
+                        name="department"
+                        value={registerData.department}
+                        onChange={handleChange}
+                 >
+                        <option hidden>Department</option>
+                        <option value="Accounting">Accounting</option>
+                        <option value="Adminstration">Adminstration</option>
+
+                </select>
+                <br />
                 <input
                     type="text"
                     onChange={handleChange}
                     value={registerData.username}
-                    name="userame"
+                    name="username"
                     placeholder="Create a username here..."
                 />
-                 {/* <br />
+                 
                 <input
                     type="email"
-                    onChange={handleChange}
                     value={registerData.email}
                     name="email"
-                    placeholder="Your email here..."
+                    hidden
                 />
-                <br />
+                
                 <input
                     type="password"
-                    onChange={handleChange}
                     value={registerData.password}
                     name="password"
-                    placeholder="Your password here..."
+                    hidden
                 />
-                <br />
+                
                 <input
-                    type="password"
-                    onChange={handleChange}
-                    value={registerData.password_confirmation}
-                    name="password_confirmation"
-                    placeholder="Re-enter your password here..."
+                    type="text"
+                    value={registerData.id}
+                    name="user_id"
+                    hidden
                 />
-                <br />
+                
                 <select
                     type="checkbox"
-                    onChange={handleChange}
                     value={registerData.is_manager}
                     name="is_manager"
+                    hidden
                 >
                     <option>Select</option>
                     <option value={true}>Manager</option>
                     <option value={false}>Staff</option>
                 </select>
-                 */}
+                
+                 <br />
                 <button type="submit">Update</button>
             </form>
-            {/* <Switch>
-                <Route path="/registration/signup">
-                <Signup handleChange={handleChange}/>  
-                </Route>
-            </Switch> */}
 
             <button onClick={handleDelete} type="submit">Start Over</button>
         </div>

@@ -121,9 +121,9 @@ function Registration ({ onAddUser}) {
                     value={registerData.is_manager}
                     name="is_manager"
                 >
-                    <option>Select</option>
-                    <option value={true}>Manager</option>
-                    <option value={false}>Staff</option>
+                <option hidden>Role</option>
+                <option value={true}>Manager</option>
+                <option value={false}>Staff</option>
                 </select>
                 
                 <button type="submit">Register</button>
