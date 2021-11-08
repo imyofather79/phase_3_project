@@ -13,19 +13,21 @@
 ActiveRecord::Schema.define(version: 4) do
 
   create_table "managers", force: :cascade do |t|
+    t.integer "user_id"
     t.string "first_name"
     t.string "last_name"
     t.string "department"
     t.string "username"
     t.string "email"
     t.string "password"
-    t.integer "user_id"
     t.boolean "is_manager"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_managers_on_user_id"
   end
 
   create_table "staffs", force: :cascade do |t|
+    t.integer "user_id"
     t.string "first_name"
     t.string "last_name"
     t.integer "paid_rate"
@@ -33,30 +35,30 @@ ActiveRecord::Schema.define(version: 4) do
     t.string "username"
     t.string "email"
     t.string "password"
-    t.integer "user_id"
     t.boolean "is_manager"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_staffs_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.string "department"
-    t.string "username"
     t.string "email"
     t.string "password"
     t.boolean "is_manager"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "work_days", force: :cascade do |t|
-    t.string "day"
     t.integer "manager_id"
     t.integer "staff_id"
+    t.string "day"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["manager_id"], name: "index_work_days_on_manager_id"
+    t.index ["staff_id"], name: "index_work_days_on_staff_id"
   end
 
+  add_foreign_key "managers", "users"
+  add_foreign_key "staffs", "users"
+  add_foreign_key "work_days", "managers"
+  add_foreign_key "work_days", "staffs"
 end

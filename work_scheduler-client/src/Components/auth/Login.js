@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import {userHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 
 function Login({changeUser}) {
 
+    const history = useHistory();
     const [login, setLogin] = useState({
-            username: "",
-            password: "",
-            loginErrors: ""
+            // username: "",
+            // password: "",
+            // loginErrors: ""
         }
     );
     // const [user, setUser] = useState(null);
@@ -33,11 +34,11 @@ function handleSubmit(e){
         findCurrentUser(login)
 }
 
-async function findCurrentUser(username) {
-    const response = await fetch(`http://localhost:9393/users/${username}`)
+async function findCurrentUser(id) {
+    const response = await fetch(`http://localhost:9393/managers/${id}`)
     const user = await response.json()
     if (response.status === 401){
-        setError("That user doesn't exist, try again or sign up for an account!")
+        return "That user doesn't exist, try again or sign up for an account!"
     } else if (!!user.is_manager){
         changeUser(user)
         history.push(`/managers/${user.id}`)
@@ -45,12 +46,21 @@ async function findCurrentUser(username) {
         changeUser(user)
         history.push(`/staffs/${user.id}`)
     }}
+    // if (response.status === 401){
+    //     return "That user doesn't exist, try again or sign up for an account!"
+    // } else if (!!user.is_manager){
+    //     changeUser(user)
+    //     history.push(`/managers/${user.id}`)
+    // } else {
+    //     changeUser(user)
+    //     history.push(`/staffs/${user.id}`)
+    // }}
 
 
 return (
     <div>
         <form onSubmit={handleSubmit}>
-            <h3 style={{color:"red"}}>{error}</h3>
+            <h3 style={{color:"red"}}>"Error"</h3>
             <input
                 type="email"
                 onChange={handleChange}

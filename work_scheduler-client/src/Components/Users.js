@@ -1,13 +1,13 @@
 import React from 'react';
 
 
-function Staff() {
+function Users() {
 
 
     return (
         <div>
-            <h1>Staff</h1>
+            <h1>Users</h1>
         </div>
     )
 }
-export default Staff;
+export default Users;

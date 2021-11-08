@@ -1,8 +1,9 @@
 class Manager < ActiveRecord::Base
-    belongs_to :user
+    
     has_many :work_days
     has_many :staffs, through: :work_days
-    validates :username, uniqueness: true
+    belongs_to :user
+    validates :email, uniqueness: true
 
     # def full_name
     #     self.first_name + " " + self.last_name

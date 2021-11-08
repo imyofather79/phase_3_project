@@ -1,6 +1,7 @@
-class CreateUsers < ActiveRecord::Migration[6.1]
+class CreateManagers < ActiveRecord::Migration[6.1]
     def change
-        create_table :users do |m|
+        create_table :managers do |m|
+            m.belongs_to :user, foreign_key: true
             m.string :first_name
             m.string :last_name
             m.string :department
@@ -10,5 +11,6 @@ class CreateUsers < ActiveRecord::Migration[6.1]
             m.boolean :is_manager
             m.timestamps
         end
+
     end
 end

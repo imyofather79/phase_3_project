@@ -1,5 +1,7 @@
 class User < ActiveRecord::Base
-    has_many :managers
-    has_many :staffs, through: :managers
-    validates :username, uniqueness: true
+    
+    has_one :manager
+    has_one :staff
+    validates :email, uniqueness: true
+    validates_presence_of :email, :password
 end
