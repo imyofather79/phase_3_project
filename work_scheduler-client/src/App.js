@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useParams, useHistory } from "react-router-dom";
 import NavBar from './Components/NavBar';
 import Home from "./Components/Home";
 import Login from './Components/auth/Login';
@@ -17,11 +17,18 @@ function App() {
   const [users, setUsers] = useState([]);
   // const history = useHistory();
 
-  // useEffect(() => {
-  //   fetch("http://localhost:9393/users")
-  //   .then((r) => r.json())
-  //   .then(setUsers)
-  // }, [])
+
+  useEffect(() => {
+    fetch("http://localhost:9393/users")
+    .then((r) => r.json())
+    .then(setUsers)
+  }, [])
+
+ 
+    console.log(users)
+    console.log(currentUser)
+  
+    let userOnly = users;
 
   function changeUser(user){
     setCurrentUser(user)
@@ -122,20 +129,8 @@ function App() {
           <Route path="/login">
               <Login changeUser={changeUser} />  
           </Route>
-          <Route path="/users">
-              <Users />  
-          </Route>
-
-
-          {/* <Route path="/sessions">
-              <Manager />  
-          </Route> */}
-          
-          <Route path="/manager">
-              <Manager />  
-          </Route>
-          <Route path="/staff">
-              <Staff /> 
+          <Route path="/users/home/:id">
+              <Users users={users} />  
           </Route>
         </Switch>
     </div>

@@ -6,7 +6,7 @@ class ApplicationController < Sinatra::Base
   end
 
   get '/registration' do
-    User.all.to_json
+    User.all.to_json()
   end
 
   post '/registration' do
@@ -23,14 +23,10 @@ class ApplicationController < Sinatra::Base
   get '/registration/validate/:username' do
 
     @user = User.find_by(username: params[:username])
-    # @email = User.find_by(email: params[:email])
-
     if @user && @user.email == params[:email]
       status 200
-      
     else 
       status 401
-      # { errors: "username or email has been registered" }.to_json
     end
   end
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Switch, useHistory } from "react-router-dom";
 
 
 function Signup({onAddUser, handleRemove}) {
@@ -28,7 +28,7 @@ function Signup({onAddUser, handleRemove}) {
             [e.target.name]: e.target.value
         });
     }
-console.log(registerData)
+
     function sendToManagers(registerData){
     fetch("http://localhost:9393/managers", {
     method: "POST",
@@ -163,6 +163,7 @@ console.log(registerData)
             </form>
 
             <button onClick={handleDelete} type="submit">Start Over</button>
+
         </div>
     )
 }

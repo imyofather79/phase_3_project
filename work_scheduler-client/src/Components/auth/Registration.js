@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Switch, useHistory } from "react-router-dom";
 import Signup from './Signup';
 
 
@@ -114,16 +114,6 @@ function Registration ({ onAddUser, changeUser}) {
                 
                 <button type="submit">Register</button>
             </form>
-            <Switch>
-                <Route path="/registration/signup">
-                <Signup 
-                    handleChange={handleChange}
-                    onAddUser={onAddUser}
-                    // sendToManagers={sendToManagers} 
-                    // sendToStaffs={sendToStaffs} 
-                />  
-                </Route>
-            </Switch>
         </div>
 
         
