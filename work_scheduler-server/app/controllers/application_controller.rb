@@ -1,6 +1,5 @@
 class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
-  
  
   get "/" do
     { message: "Test" }.to_json
@@ -11,113 +10,82 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/registration' do
-    user = User.create(
-      email: params[:email],
-      password: params[:password],
-      is_manager: params[:is_manager]
-    )
-    user.to_json
-    session[:user_id] = user.id
-    redirect '/registration/signup'
+        @user = User.create(
+          username: params[:username],
+          email: params[:email],
+          password: params[:password],
+          is_manager: params[:is_manager]
+        )
+        @user.to_json
+  end
+
+  #false matching
+  get '/registration/validate/:username' do
+
+    @user = User.find_by(username: params[:username])
+    # @email = User.find_by(email: params[:email])
+
+    if @user && @user.email == params[:email]
+      status 200
+      
+    else 
+      status 401
+      # { errors: "username or email has been registered" }.to_json
+    end
   end
 
   get '/registration/signup' do
-      user = User.last
-      user.to_json
+      @user = User.last
+      @user.to_json
   end
 
   delete '/registration/signup' do
-    user = User.last.destroy
-    user.to_json
+    @user = User.last.destroy
+    @user.to_json
   end
 
-  # post '/registration/signup' do
-  #     user = User.last
-  #     if !user.is_manager
-  #       staff = Staff.create(
-  #         first_name: params[:first_name],
-  #         last_name: params[:last_name],
-  #         department: params[:department],
-  #         paid_rate: params[:paid_rate],
-  #         username: params[:username],
-  #         email: params[:email],
-  #         password: params[:password],
-  #         is_manager: params[:is_manager]
-  #   )
-  #   staff.to_json
-
-  #     else 
-  #       manager = Manager.create(
-  #           first_name: params[:first_name],
-  #           last_name: params[:last_name],
-  #           department: params[:department],
-  #           user_id: params[:user_id],
-  #           username: params[:username],
-  #           email: params[:email],
-  #           password: params[:password],
-  #           is_manager: params[:is_manager]
-  #       )
-  #       manager.to_json
-  #     end
-  #     if user.is_manager == true
-  #       manager = Manager.create(
-  #           first_name: params[:first_name],
-  #           last_name: params[:last_name],
-  #           department: params[:department],
-  #           user_id: params[:user_id],
-  #           username: params[:username],
-  #           email: params[:email],
-  #           password: params[:password],
-  #           is_manager: params[:is_manager]
-  #       )
-  #       manager.to_json
-  #     else 
-  #       staff = Staff.create(
-  #           first_name: params[:first_name],
-  #           last_name: params[:last_name],
-  #           department: params[:department],
-  #           paid_rate: params[:paid_rate],
-  #           username: params[:username],
-  #           email: params[:email],
-  #           password: params[:password],
-  #           is_manager: params[:is_manager]
-  #     )
-  #     staff.to_json
-  #     end
-  # end
-
-  get '/sessions/login' do
+  get '/login' do
     # erb :'sessions/login'
+    User.all.to_json
   end
 
-  post '/sessions' do
-    user = User.create(
-      email: params[:email], 
-      password: params[:password], 
-      is_manager: params[:is_manager]
-    )
-  if user
-    session[:user_id] = user.id
-    redirect '/users/home'
-  end
-  redirect '/sessions/login'
-  
+  post '/login' do
+    @user = User.find_by(params[:email])
+    if @user != nil && @user.password == params[:password]
+      params[:user_id] = @user.id
+      
+    end
   end
 
-  get '/sessions/logout' do 
-    session.clear
+  get '/logout' do 
+    login.clear
     # redirect '/'
   end
 
-  get '/users/home/:id' do
-    @user = User.find(session[:id])
-    # erb :'/users/home'
+  get '/users' do
+    User.all.to_json
   end
 
-  patch '/users/home:id' do
+  get '/users/:username' do
+    @user = User.find_by(username: params[:username])
+    if @user 
+      @user.to_json(
+          if @user.is_manager
+          {include: {manager: {only: [:first_name, :last_name, :department, :id, :email, :username, :password]}}}
+          else
+          {include:{staff: {only: [:first_name, :last_name, :paid_rate, :department, :username, :email, :password]}}}
+          end
+        )
+    else 
+      status 401
+      { errors: "user doesn't exist" }.to_json
+    end
+  end
+
+  patch '/users/home/:id' do
     @user = User.find(session[:id])
-    if !!user.is_manager
-      manager = Manager.update(
+    if !!@user.is_manager
+      @manager = Manager.update(
           first_name: params[:first_name],
           last_name: params[:last_name],
           department: params[:department],
@@ -126,9 +94,9 @@ class ApplicationController < Sinatra::Base
           password: params[:password],
           is_manager: params[:is_manager]
       )
-      manager.to_json
+      @manager.to_json
     else 
-      staff = Staff.update(
+      @staff = Staff.update(
           first_name: params[:first_name],
           last_name: params[:last_name],
           department: params[:department],
@@ -138,7 +106,7 @@ class ApplicationController < Sinatra::Base
           password: params[:password],
           is_manager: params[:is_manager]
       )
-    staff.to_json
+    @staff.to_json
     end
   end
 #   get"/users/:id" do
@@ -209,8 +177,8 @@ class ApplicationController < Sinatra::Base
 
   # show
   get "/managers/:id" do
-    manager = Manager.find(params[:id])
-    manager.to_json(
+    @manager = Manager.find(params[:id])
+    @manager.to_json(
      only: [:first_name, :last_name, :department, :id, :email, :username, :password, :user_id], include: {
        staffs: {only: [:first_name, :last_name, :paid_rate, :department, :username, :email, :password]}
     })
@@ -218,7 +186,7 @@ class ApplicationController < Sinatra::Base
 
   # create
   post "/managers" do
-    managers = Manager.create(
+    @managers = Manager.create(
       first_name: params[:first_name],
       last_name: params[:last_name],
       department: params[:department],
@@ -228,13 +196,13 @@ class ApplicationController < Sinatra::Base
       password: params[:password],
       is_manager: params[:is_manager]
     )
-    managers.to_json
+    @managers.to_json
   end
 
   # update
   patch '/managers/:id' do
-    managers = Manager.find(params[:id])
-    managers.update(
+    @managers = Manager.find(params[:id])
+    @managers.update(
       first_name: params[:first_name],
       last_name: params[:last_name],
       department: params[:department],
@@ -247,28 +215,28 @@ class ApplicationController < Sinatra::Base
 
   # delete
   delete '/managers/:id' do
-    managers = Manager.find(params[:id])
-    managers.destroy
-    managers.to_json
+    @managers = Manager.find(params[:id])
+    @managers.destroy
+    @managers.to_json
   end
 
   # index
   get '/staffs' do
-    staffs = Staff.all
-    staffs.to_json
+    @staffs = Staff.all
+    @staffs.to_json
   end
   
   # show
   get "/staffs/:id" do
-    staff = Staff.find(params[:id])
-      staff.to_json(only: [:first_name, :last_name, :department, :id, :email, :username, :password, :user_id, :paid_rate], include: {
+    @staff = Staff.find(params[:id])
+      @staff.to_json(only: [:first_name, :last_name, :department, :id, :email, :username, :password, :user_id, :paid_rate], include: {
         managers: {only: [:first_name, :last_name, :department]}
      })
   end
 
 
   post "/staffs" do
-    staffs = Staff.create(
+    @staffs = Staff.create(
       first_name: params[:first_name],
       last_name: params[:last_name],
       department: params[:department],
@@ -279,13 +247,13 @@ class ApplicationController < Sinatra::Base
       password: params[:password],
       is_manager: params[:is_manager]
     )
-    staffs.to_json
+    @staffs.to_json
   end
 
   # update
   patch '/staffs/:id' do
-    staffs = Staff.find(params[:id])
-    staffs.update(
+    @staffs = Staff.find(params[:id])
+    @staffs.update(
       first_name: params[:first_name],
       last_name: params[:last_name],
       paid_rate: params[:paid_rate],
@@ -299,9 +267,9 @@ class ApplicationController < Sinatra::Base
 
   # delete
   delete '/staffs/:id' do
-    staffs = Staff.find(params[:id])
-    staffs.destroy
-    staffs.to_json
+    @staffs = Staff.find(params[:id])
+    @staffs.destroy
+    @staffs.to_json
   end
 
 

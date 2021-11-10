@@ -55,27 +55,32 @@ User.destroy_all
 
 User.create([
     {
+        username: "Manager1",
         email: "123@123.com",
         password: "123456",
         is_manager: true
     },
     {
+        username: "Manager2",
         email: "1234@123.com",
         password: "123456",
         is_manager: true
     },
     {
+        username: "Staff1",
         email: "1237@123.com",
         password: "123456",
         is_manager: false
     },
     {
+        username: "Staff2",
         email: "1238@123.com",
         password: "123456",
         is_manager: false
 
     },
     {
+        username: "Staff3",
         email: "1239@123.com",
         password: "123456",
         is_manager: false

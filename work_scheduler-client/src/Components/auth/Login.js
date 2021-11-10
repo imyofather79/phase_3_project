@@ -2,83 +2,71 @@ import React, { useState } from 'react';
 import {useHistory} from "react-router-dom";
 
 
-function Login({changeUser}) {
+function Login() {
 
     const history = useHistory();
-    const [login, setLogin] = useState({
-            // username: "",
-            // password: "",
-            // loginErrors: ""
-        }
-    );
-    // const [user, setUser] = useState(null);
-    // const [error, setError] = useState(null);
-
+    const [user, setUser] = useState("");
+    const [error, setError] = useState(null);
+    
     function handleChange(e){
-        setLogin({
-            ...login,
+        setUser({
+            ...user,
             [e.target.name]: e.target.value
         });
     }
-
-//    function handleSuccessfulAuth(data){
-//         handleLogin(data);
-//         if data.
-//         history.push("/Staff");
-//     }
-
-
+    console.log(user)
 
 function handleSubmit(e){
        e.preventDefault();
-        findCurrentUser(login)
+       let currentUser = user
+        findCurrentUser(currentUser)
 }
 
-async function findCurrentUser(id) {
-    const response = await fetch(`http://localhost:9393/managers/${id}`)
-    const user = await response.json()
+async function findCurrentUser(currentUser) {
+    console.log(currentUser)
+    const response = await fetch(`http://localhost:9393/users/${currentUser.username}`)
+    console.log(response)
     if (response.status === 401){
-        return "That user doesn't exist, try again or sign up for an account!"
-    } else if (!!user.is_manager){
-        changeUser(user)
-        history.push(`/managers/${user.id}`)
-    } else {
-        changeUser(user)
-        history.push(`/staffs/${user.id}`)
-    }}
-    // if (response.status === 401){
-    //     return "That user doesn't exist, try again or sign up for an account!"
-    // } else if (!!user.is_manager){
-    //     changeUser(user)
-    //     history.push(`/managers/${user.id}`)
-    // } else {
-    //     changeUser(user)
-    //     history.push(`/staffs/${user.id}`)
-    // }}
-
+        setError("That user doesn't exist, try again or sign up for an account!")
+    } else  {
+        fetch(`http://localhost:9393/users/${currentUser.username}`)
+            .then((r) => r.json())
+            .then(registerData => {
+                console.log(currentUser.password)
+                console.log(registerData)
+            if (registerData.password == currentUser.password){
+                history.push(`/user/home/${registerData.id}`)
+                } else {
+                    setError("The password is incorrect. Please try again!")
+                };
+            })
+    }
+}
 
 return (
     <div>
         <form onSubmit={handleSubmit}>
-            <h3 style={{color:"red"}}>"Error"</h3>
+            <h3 style={{color:"red"}}>{error}</h3>
+            <label htmlFor="login" value="username">Username: </label>
             <input
-                type="email"
+                type="text"
                 onChange={handleChange}
-                value={login.email}
-                name="Email"
-                placeholder="Your email here..."
+                value={user.username}
+                name="username"
+                placeholder="Your username here..."
+                autoFocus={true}
             />
+            <label htmlFor="login" value="password">Password: </label>
             <input
                 type="password"
                 onChange={handleChange}
-                value={login.password}
-                name="Password"
+                value={user.password}
+                name="password"
                 placeholder="Your password here..."
+                autoFocus={true}
             />
             <button type="submit">Login</button>
-
         </form>
-        
     </div>
 );
 }

@@ -4,7 +4,7 @@ import { Route, Switch, useHistory } from "react-router-dom";
 
 function Signup({onAddUser, handleRemove}) {
 
-    const [registerData, setRegisterData] = useState({});
+    const [registerData, setRegisterData] = useState("");
     const history = useHistory();
 
     useEffect(() => {
@@ -28,7 +28,7 @@ function Signup({onAddUser, handleRemove}) {
             [e.target.name]: e.target.value
         });
     }
-
+console.log(registerData)
     function sendToManagers(registerData){
     fetch("http://localhost:9393/managers", {
     method: "POST",
@@ -118,13 +118,12 @@ function Signup({onAddUser, handleRemove}) {
                         <option value="Adminstration">Adminstration</option>
 
                 </select>
-                <br />
+                
                 <input
                     type="text"
-                    onChange={handleChange}
                     value={registerData.username}
                     name="username"
-                    placeholder="Create a username here..."
+                    hidden
                 />
                  
                 <input

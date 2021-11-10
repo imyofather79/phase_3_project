@@ -13,7 +13,7 @@ import Registration from './Components/auth/Registration';
 
 
 function App() {
-  // const [currentUser, setCurrentUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
   const [users, setUsers] = useState([]);
   // const history = useHistory();
 
@@ -24,7 +24,7 @@ function App() {
   // }, [])
 
   function changeUser(user){
-    setUsers(user)
+    setCurrentUser(user)
   };
 
   function handleRemove(removeUser){
@@ -111,6 +111,7 @@ function App() {
                 // sendToManagers={sendToManagers} 
                 // sendToStaffs={sendToStaffs}
                 onAddUser={onAddUser}
+                changeUser={changeUser}
               />  
           </Route>
           <Route path="/registration/signup">
@@ -118,7 +119,7 @@ function App() {
                   handleRemove={handleRemove} 
                 />  
             </Route>
-          <Route path="/sessions">
+          <Route path="/login">
               <Login changeUser={changeUser} />  
           </Route>
           <Route path="/users">
@@ -128,14 +129,14 @@ function App() {
 
           {/* <Route path="/sessions">
               <Manager />  
-          </Route>
+          </Route> */}
           
           <Route path="/manager">
               <Manager />  
           </Route>
           <Route path="/staff">
               <Staff /> 
-          </Route> */}
+          </Route>
         </Switch>
     </div>
   );

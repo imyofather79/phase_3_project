@@ -23,14 +23,13 @@ ActiveRecord::Schema.define(version: 4) do
     t.boolean "is_manager"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_managers_on_user_id"
   end
 
   create_table "staffs", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.string "first_name"
     t.string "last_name"
-    t.integer "paid_rate"
+    t.decimal "paid_rate"
     t.string "department"
     t.string "username"
     t.string "email"
@@ -41,18 +40,18 @@ ActiveRecord::Schema.define(version: 4) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "username"
     t.string "email"
     t.string "password"
     t.boolean "is_manager"
   end
 
   create_table "work_days", force: :cascade do |t|
-    t.integer "manager_id", null: false
-    t.integer "staff_id", null: false
+    t.integer "manager_id"
+    t.integer "staff_id"
     t.string "day"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  add_foreign_key "managers", "users"
 end

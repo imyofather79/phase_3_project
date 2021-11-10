@@ -4,7 +4,7 @@ class CreateStaffs < ActiveRecord::Migration[6.1]
             s.integer   :user_id
             s.string    :first_name
             s.string    :last_name
-            s.integer   :paid_rate
+            s.decimal   :paid_rate
             s.string    :department
             s.string    :username
             s.string    :email
