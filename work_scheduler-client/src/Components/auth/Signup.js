@@ -1,33 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
+import Users from '../Users';
 
-
-function Signup({onAddUser, handleRemove}) {
+function Signup() {
 
     const [registerData, setRegisterData] = useState("");
+    const [users, setUsers] = useState([]);
     const history = useHistory();
+    const [error, setError] = useState(null);
+    // console.log(registerEntry);
+
+    //  useEffect(() => { 
+    //    fetch("http://localhost:9393/registration/last")
+    //     .then((r) => r.json())
+    //     .then((json) => {
+    //         setRegisterData(json);
+    //         console.log(json)
+    //     }) 
+    // }, [])
+
 
     useEffect(() => {
-        const url = "http://localhost:9393/registration/signup";
+        const url = "http://localhost:9393/registration/last";
         const fetchData = async () => {
             try {
                 const response = await fetch(url);
                 const json = await response.json();
                 setRegisterData(json);
-            } catch (error) {
+            } catch {
                 console.log("error", error);
             }
         };
         fetchData();
     }, []);
 
+    // console.log(registerEntry);
+    console.log(registerData);
+
     function handleChange(e){
         setRegisterData({
             ...registerData,
+            username: registerData.username,
             user_id: registerData.id,
             [e.target.name]: e.target.value
         });
     }
+
+    function handleRemove(removeUser){
+        const updatedUsers = users.filter((user) => 
+          user !== removeUser);
+          setUsers(updatedUsers);
+      };
 
     function sendToManagers(registerData){
     fetch("http://localhost:9393/managers", {
@@ -41,9 +64,9 @@ function Signup({onAddUser, handleRemove}) {
         .then((r) => r.json())
         .then(registerData => {
         
-            onAddUser(registerData);
+            setRegisterData(registerData);
         },
-        history.push(`/user/home/${registerData.id}`)
+        history.push(`/users/home/${registerData.id}`)
         )
   };
 
@@ -58,15 +81,16 @@ function Signup({onAddUser, handleRemove}) {
     })
         .then((r) => r.json())
         .then(registerData => {
-          onAddUser(registerData);
+          setRegisterData(registerData);
         },
-        history.push(`/user/home/${registerData.id}`)
+        history.push(`/users/home/${registerData.id}`)
         )
   };   
   
 
     function handleSubmit(e){
         e.preventDefault();
+        // findUsers(registerData);
         let sup = registerData.is_manager
         if (sup){
             sendToManagers(registerData);
@@ -74,6 +98,39 @@ function Signup({onAddUser, handleRemove}) {
             sendToStaffs(registerData);
         } 
     }
+
+    // async function findEmail() {
+    //     console.log(registerData)
+    //     console.log(registerData.username)
+    //     const checkUser = await fetch(`http://localhost:9393/signup/${registerData.username}`)
+    //     if (checkUser.status === 200){
+    //         setError("email has been previously registered, please assign a new email.")
+    //     } else  {
+    //         let sup = registerData.is_manager
+    //         if (sup){
+    //             sendToManagers(registerData);
+    //         } else {
+    //             sendToStaffs(registerData);
+    //         } 
+    //         // fetch("http://localhost:9393/registration", {
+    //         //     method: "POST",
+    //         //     headers: {
+    //         //         "Accept": "application/json",
+    //         //         "Content-Type": "application/json",
+    //         //         },
+    //         //     body: JSON.stringify(registerData),
+    //         //     })
+    //         //         .then((r) => r.json())
+    //         //         .then(registerData => {
+    //         //             if (currentUser.password === currentUser.password_confirmation){
+    //         //                 setRegisterData(registerData);
+    //         //                 history.push("/registration/signup")
+    //         //             } else {
+    //         //                 setError("Please check password!")
+    //         //             };
+    //         //         })
+    //     }
+    // }
 
     function handleDelete(e){
         e.preventDefault();
@@ -83,15 +140,18 @@ function Signup({onAddUser, handleRemove}) {
             })
                 .then((r) => r.json())
                 .then(() => (
-                handleRemove(registerData),
-                history.push("/registration")
-            ));
+                handleRemove(registerData)
+            ),
+            history.push("/registration")
+            );
     }
 
     return (
         <div>
             <h1>User info</h1>
             <form onSubmit={handleSubmit}>
+            <h3 style={{color:"red"}}>{error}</h3>
+                <label>First name: </label>
                 <input
                     type="text"
                     onChange={handleChange}
@@ -99,7 +159,8 @@ function Signup({onAddUser, handleRemove}) {
                     name="first_name"
                     placeholder="Your first name here..."
                 /> 
-                <br />
+                {/* <br /> */}
+                <label>Last name: </label>
                 <input
                     type="text"
                     onChange={handleChange}
@@ -108,6 +169,7 @@ function Signup({onAddUser, handleRemove}) {
                     placeholder="Your last name here..."
                 />
                 <br />
+                <label>Department: </label>
                 <select 
                         name="department"
                         value={registerData.department}
@@ -118,21 +180,22 @@ function Signup({onAddUser, handleRemove}) {
                         <option value="Adminstration">Adminstration</option>
 
                 </select>
-                
+                {/* <label>Email: </label> */}
+                <input
+                    type="email"
+                    onChange={handleChange}
+                    value={registerData.email}
+                    name="email"
+                    hidden
+                />
+                <br />
                 <input
                     type="text"
                     value={registerData.username}
                     name="username"
                     hidden
                 />
-                 
-                <input
-                    type="email"
-                    value={registerData.email}
-                    name="email"
-                    hidden
-                />
-                
+
                 <input
                     type="password"
                     value={registerData.password}
@@ -161,9 +224,13 @@ function Signup({onAddUser, handleRemove}) {
                  <br />
                 <button type="submit">Update</button>
             </form>
-
             <button onClick={handleDelete} type="submit">Start Over</button>
 
+            <Switch>
+                <Route path="/users/home/:id">
+                    <Users signUpUserData={registerData}/>  
+                </Route>
+            </Switch>
         </div>
     )
 }

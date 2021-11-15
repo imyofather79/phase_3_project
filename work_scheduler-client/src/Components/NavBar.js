@@ -1,11 +1,7 @@
 import React from 'react';
-import { NavLink } from "react-router-dom";
-// import Home from "./Components/Home";
-// import Login from './Components/auth/Login';
-// import Registration from './Components/auth/Registration';
+import { NavLink} from "react-router-dom";
 
 function NavBar() {
-
 
   return (
     <nav>
@@ -15,9 +11,9 @@ function NavBar() {
           <NavLink to="/registration">
             Register
           </NavLink>
-          <NavLink to="/login">
-            Login
-          </NavLink>
+          <NavLink to="/login" exact>
+            Login/Logoff
+          </NavLink> 
     </nav>
   );
 }

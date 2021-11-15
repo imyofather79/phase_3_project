@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, Route, Switch, useParams, useHistory } from "react-router-dom";
 
- function UsersList({users}) {
+ function UsersList() {
 
     const renderUsers = Object.keys(users).map((userID) => (
         <li key={userID}>

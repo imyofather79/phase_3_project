@@ -1,12 +1,15 @@
 import React from 'react'
-// import Registration from './auth/Registration';
+import { Redirect } from 'react-router';
 
- function Home() {
+ function Home( {isLoggedIn} ) {
   
+
+    if(!isLoggedIn) return <Redirect to="/" />
 
     return (
         <div>
             <h1>Welcome!</h1>
+            
         </div>
     )
 }

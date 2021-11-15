@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Switch, useHistory } from "react-router-dom";
+import { Route, useHistory } from "react-router-dom";
+import Users from '../Users';
 
 
-function Login() {
+function Login({setIsLoggedIn}) {
 
     const history = useHistory();
     const [user, setUser] = useState("");
+    const [registerData, setRegisterData] = useState("");
     const [error, setError] = useState(null);
     
     function handleChange(e){
@@ -15,32 +17,34 @@ function Login() {
         });
     }
 
-    function handleSubmit(e){
+   async function handleSubmit(e){
         e.preventDefault();
         let currentUser = user
             findCurrentUser(currentUser)
     }
 
     async function findCurrentUser(currentUser) {
-        console.log(currentUser)
         const response = await fetch(`http://localhost:9393/users/${currentUser.username}`)
-        console.log(response)
         if (response.status === 401){
             setError("That user doesn't exist, try again or sign up for an account!")
         } else  {
             fetch(`http://localhost:9393/users/${currentUser.username}`)
                 .then((r) => r.json())
                 .then(registerData => {
-                    console.log(currentUser.password)
-                    console.log(registerData)
-                if (registerData.password == currentUser.password){
-                    history.push(`/user/home/${registerData.id}`)
+                if (registerData.password === currentUser.password){
+                    setRegisterData(registerData);
+                    setIsLoggedIn(true);
+                    history.push(`/users/home/${registerData.id}`)
                     } else {
                         setError("The password is incorrect. Please try again!")
                     };
                 })
         }
 }
+
+console.log(registerData)
+console.log(user)
+let signUpUserData = registerData;
 
 return (
     <div>
@@ -66,7 +70,12 @@ return (
             />
             <button type="submit">Login</button>
         </form>
-
+        <Route path="/users/home/:id">
+            <Users 
+            registerData={registerData}
+            signUpUserData={signUpUserData}
+            />  
+        </Route>
     </div>
 );
 }
