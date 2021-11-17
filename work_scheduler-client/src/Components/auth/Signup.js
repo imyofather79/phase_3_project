@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from "react-router-dom";
 import Users from '../Users';
 
-function Signup() {
+function Signup({onAddUser, registerEntry}) {
 
     const [registerData, setRegisterData] = useState("");
     const [users, setUsers] = useState([]);
     const history = useHistory();
     const [error, setError] = useState(null);
-    // console.log(registerEntry);
+    console.log(registerEntry);
 
     //  useEffect(() => { 
     //    fetch("http://localhost:9393/registration/last")
@@ -20,21 +20,21 @@ function Signup() {
     // }, [])
 
 
-    useEffect(() => {
-        const url = "http://localhost:9393/registration/last";
-        const fetchData = async () => {
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                setRegisterData(json);
-            } catch {
-                console.log("error", error);
-            }
-        };
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     const url = "http://localhost:9393/users/last";
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await fetch(url);
+    //             const json = await response.json();
+    //             setRegisterData(json);
+    //         } catch {
+    //             console.log("error", error);
+    //         }
+    //     };
+    //     fetchData();
+    // }, [registerEntry]);
 
-    // console.log(registerEntry);
+    console.log(registerEntry);
     console.log(registerData);
 
     function handleChange(e){
@@ -52,97 +52,35 @@ function Signup() {
           setUsers(updatedUsers);
       };
 
-    function sendToManagers(registerData){
-    fetch("http://localhost:9393/managers", {
-    method: "POST",
-    headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        },
-    body: JSON.stringify(registerData),
-    })
-        .then((r) => r.json())
-        .then(registerData => {
-        
-            setRegisterData(registerData);
-        },
-        history.push(`/users/home/${registerData.id}`)
-        )
-  };
 
-  function sendToStaffs(registerData){
-    fetch("http://localhost:9393/staffs", {
-    method: "POST",
-    headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        },
-    body: JSON.stringify(registerData),
-    })
-        .then((r) => r.json())
-        .then(registerData => {
-          setRegisterData(registerData);
-        },
-        history.push(`/users/home/${registerData.id}`)
-        )
-  };   
-  
 
     function handleSubmit(e){
         e.preventDefault();
-        // findUsers(registerData);
-        let sup = registerData.is_manager
-        if (sup){
-            sendToManagers(registerData);
-        } else {
-            sendToStaffs(registerData);
-        } 
+        fetch(`http://localhost:9393/users/${registerData.id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              body: registerData,
+            }),
+          })
+            .then((r) => r.json())
+            .then((registerData) => setRegisterData(registerData));
     }
 
-    // async function findEmail() {
-    //     console.log(registerData)
-    //     console.log(registerData.username)
-    //     const checkUser = await fetch(`http://localhost:9393/signup/${registerData.username}`)
-    //     if (checkUser.status === 200){
-    //         setError("email has been previously registered, please assign a new email.")
-    //     } else  {
-    //         let sup = registerData.is_manager
-    //         if (sup){
-    //             sendToManagers(registerData);
-    //         } else {
-    //             sendToStaffs(registerData);
-    //         } 
-    //         // fetch("http://localhost:9393/registration", {
-    //         //     method: "POST",
-    //         //     headers: {
-    //         //         "Accept": "application/json",
-    //         //         "Content-Type": "application/json",
-    //         //         },
-    //         //     body: JSON.stringify(registerData),
-    //         //     })
-    //         //         .then((r) => r.json())
-    //         //         .then(registerData => {
-    //         //             if (currentUser.password === currentUser.password_confirmation){
-    //         //                 setRegisterData(registerData);
-    //         //                 history.push("/registration/signup")
-    //         //             } else {
-    //         //                 setError("Please check password!")
-    //         //             };
-    //         //         })
-    //     }
-    // }
+  
 
     function handleDelete(e){
         e.preventDefault();
-
-        fetch("http://localhost:9393/registration/signup", {
+        fetch("http://localhost:9393/users/last", {
             method: "DELETE",
             })
                 .then((r) => r.json())
                 .then(() => (
                 handleRemove(registerData)
             ),
-            history.push("/registration")
+            history.push("/users")
             );
     }
 
@@ -175,9 +113,13 @@ function Signup() {
                         value={registerData.department}
                         onChange={handleChange}
                  >
-                        <option hidden>Department</option>
+                        <option >Department</option>
                         <option value="Accounting">Accounting</option>
                         <option value="Adminstration">Adminstration</option>
+                        <option value="Shipping">Shipping</option>
+                        <option value="Operation">Operation</option>
+                        <option value="Logistics">Logistics</option>
+                        <option value="Retails">Retails</option>
 
                 </select>
                 {/* <label>Email: </label> */}

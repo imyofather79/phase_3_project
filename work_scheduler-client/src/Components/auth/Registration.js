@@ -2,36 +2,35 @@ import React, { useState } from 'react';
 import { useHistory, Route } from "react-router-dom";
 import Signup from './Signup';
 
-function Registration () {
+function Registration ({users, setIsLoggedIn}) {
  
     const [registerData, setRegisterData] = useState("");
     const history = useHistory();
     const [error, setError] = useState(null);
-
+    console.log(users)
     
     function handleChange(e){
-        setRegisterData({
-            ...registerData,
+        setRegisterData((prev) => {
+           return {
+            ...prev,
             [e.target.name]: e.target.value
+            }
         });
     };
 
     function handleSubmit(e){
         e.preventDefault();
-        findUsers(registerData)
-        console.log(registerData)
-        // postMethod(registerData);
+        findUsers(registerData);
+        setIsLoggedIn(true);
     };
 
      async function findUsers() {
-        // console.log(currentUser)
         console.log(registerData)
-        const checkUser = await fetch(`http://localhost:9393/registration/${registerData.username}`)
+        const checkUser = await fetch(`http://localhost:9393/users/${registerData.id}`)
         console.log(checkUser)
         if (checkUser.status === 200){
             setError("username has been previously registered, please assign a new username or email.")
         } else { 
-            // postMethod(registerData);
             findEmail(registerData);
         }
     };
@@ -39,7 +38,7 @@ function Registration () {
     async function findEmail() {
         console.log(registerData)
         console.log(registerData.username)
-        const checkUser = await fetch(`http://localhost:9393/registration/email/?email=${registerData.email}`)
+        const checkUser = await fetch(`http://localhost:9393/users/?email=${registerData.email}`)
         if (checkUser.status === 200){
             setError("email has been previously registered, please assign a new email.")
         } else  {
@@ -50,7 +49,7 @@ function Registration () {
     function postMethod(){
         console.log(registerData)
         if (registerData.password === registerData.password_confirmation){
-        fetch("http://localhost:9393/registration", {
+        fetch("http://localhost:9393/users", {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -60,16 +59,17 @@ function Registration () {
         })
         .then((r) => r.json())
         .then(r => {
+            console.log(r)
                 setRegisterData(r);
-                history.push("/registration/signup")
+                history.push("/users/signup")
                 
             })} else {
         setError("Please check password!")
             };
     };
         
-    let prevData = registerData.username;
-    console.log(prevData);
+    
+    console.log(registerData);
     
     // async function findUsers(currentUser) {
     //     const checkUser = await fetch(`http://localhost:9393/registration/${currentUser.username}`)
