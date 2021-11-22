@@ -4,14 +4,15 @@ import NavBar from './Components/NavBar';
 import Home from "./Components/Home";
 import Login from './Components/auth/Login';
 import Users from './Components/Users';
-import Signup from './Components/auth/Signup';
 import Registration from './Components/auth/Registration';
 import Department from './Components/Department';
+import DepShowList from './Components/DepShowList';
 
 
 function App() {
   const [users, setUsers] = useState([]);
-  // const [currentUser, setCurrentUser] = useState("");
+  const [departments, setDepartments] = useState([]);
+  const [currentUser, setCurrentUser] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState();
 
   useEffect(() => { 
@@ -22,6 +23,15 @@ function App() {
       setIsLoggedIn(false);
     }) 
   }, [])
+
+  useEffect(() => { 
+    fetch(`http://localhost:9393/departments`)
+    .then((r) => r.json())
+    .then((json) => {
+      setDepartments([...json]);
+    }) 
+  }, [])
+
 
   function onAddUser(registerData){
     setUsers([...users, registerData])
@@ -45,36 +55,37 @@ function App() {
                 })
               });
   }
- // function handleRemove(removeUser){
-  //   const updatedUsers = users.filter((user) => 
-  //     user !== removeUser);
-  //     setUsers(updatedUsers);
-  // };
-  const handleRemove = async (id) => {
-    let resp = await fetch(`http://localhost:9393/users/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      }
-    })
-    let registerData = await resp.json()
-    let remainingUsers = users.filter(user => user.id !== id)
-    setUsers([...remainingUsers])
-  }
 
+ function handleRemove(removeUser){
+    const updatedUsers = users.filter((user) => 
+      user !== removeUser);
+      setUsers(updatedUsers);
+  };
+  // const handleRemove = async (id) => {
+  //   let resp = await fetch(`http://localhost:9393/users/home/${id}`, {
+  //     method: "DELETE",
+  //     headers: {
+  //       "Accept": "application/json",
+  //       "Content-Type": "application/json",
+  //     }
+  //   })
+  //   let registerData = await resp.json()
+  //   let remainingUsers = users.filter(user => user.id !== id)
+  //   setUsers([...remainingUsers])
+  // }
+
+  
 
   return (
     <div>
         <NavBar setIsLoggedIn={setIsLoggedIn} isLoggedIn={isLoggedIn} />
         <Switch>
           <Route exact path="/"><Home isLoggedIn={isLoggedIn} /></Route>
-          <Route exact path="/users/registration"><Registration  users={users} setIsLoggedIn={setIsLoggedIn} onAddUser={onAddUser}/></Route>
-          <Route exact path="/users/signup"><Signup users={users} onAddUser={onAddUser} editUser={editUser} /></Route>
-          <Route exact path="/users/login"><Login users={users} setIsLoggedIn={setIsLoggedIn} onAddUser={onAddUser}/></Route>
-          <Route exact path="/users/home/:id"><Users users={users} onAddUser={onAddUser} editUser={editUser} handleRemove={handleRemove}/></Route>
-          <Route exact path="/department"><Department users={users} onAddUser={onAddUser} /></Route>
-
+          <Route exact path="/users/registration"><Registration  users={users} setIsLoggedIn={setIsLoggedIn} setCurrentUser={setCurrentUser}/></Route>
+          <Route exact path="/users/login"><Login users={users} setIsLoggedIn={setIsLoggedIn} setCurrentUser={setCurrentUser}/></Route>
+          <Route exact path="/users/home/:id"><Users users={users} onAddUser={onAddUser} editUser={editUser} handleRemove={handleRemove} currentUser={currentUser} setCurrentUser={setCurrentUser}/></Route>
+          <Route exact path="/departments"><Department setDepartments={setDepartments} departments={departments} users={users}/></Route>
+          <Route exact path="/departments/:department"><DepShowList departments={departments} users={users}/></Route>
         </Switch>
     </div>
   );

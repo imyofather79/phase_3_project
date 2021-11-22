@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import DepManagerList from './DepManagerList';
 
-
-function Department() {
-
-
-
-
+function Department({departments, users, setDepartments}) {
+console.log(departments)
+console.log(users)
 
   return (
     <div>
-      {/* <h2>Department Control Center</h2>
-      <p>{showStaffs}</p> */}
+      <p>Departments</p>
+      {departments.map(d => <DepManagerList users={users} department={d} departments={departments} setDepartments={setDepartments}/>)}
     </div>
   );
 }

@@ -1,4 +1,8 @@
+require 'sinatra'
+
 require_relative "./config/environment"
+# require_relative "./controllers/user_controller.rb"
+# require_relative "./controllers/department_controller.rb"
 
 # Allow CORS (Cross-Origin Resource Sharing) requests
 use Rack::Cors do
@@ -13,5 +17,5 @@ use Rack::JSONBodyParser
 
 # Our application
 run ApplicationController
-run DepartmentController
-run UserController
+use DepartmentController
+use UserController

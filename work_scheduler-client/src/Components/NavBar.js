@@ -8,6 +8,9 @@ function NavBar() {
           <NavLink to="/" exact>
             Home
           </NavLink>
+          <NavLink to="/departments" exact>
+            Departments
+          </NavLink>
           <NavLink to="/users/registration" exact>
             Register
           </NavLink>

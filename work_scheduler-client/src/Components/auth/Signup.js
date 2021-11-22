@@ -2,46 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from "react-router-dom";
 import Users from '../Users';
 
-function Signup({onAddUser, registerEntry}) {
+function Signup({onAddUser, currentUser, setCurrentUser}) {
 
-    const [registerData, setRegisterData] = useState("");
+    const [registerData, setRegisterData] = useState({});
     const [users, setUsers] = useState([]);
     const history = useHistory();
     const [error, setError] = useState(null);
-    console.log(registerEntry);
-
-    //  useEffect(() => { 
-    //    fetch("http://localhost:9393/registration/last")
-    //     .then((r) => r.json())
-    //     .then((json) => {
-    //         setRegisterData(json);
-    //         console.log(json)
-    //     }) 
-    // }, [])
+    console.log(currentUser);
 
 
-    // useEffect(() => {
-    //     const url = "http://localhost:9393/users/last";
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await fetch(url);
-    //             const json = await response.json();
-    //             setRegisterData(json);
-    //         } catch {
-    //             console.log("error", error);
-    //         }
-    //     };
-    //     fetchData();
-    // }, [registerEntry]);
-
-    console.log(registerEntry);
-    console.log(registerData);
 
     function handleChange(e){
         setRegisterData({
-            ...registerData,
-            username: registerData.username,
-            user_id: registerData.id,
+            ...currentUser,
             [e.target.name]: e.target.value
         });
     }
@@ -56,7 +29,8 @@ function Signup({onAddUser, registerEntry}) {
 
     function handleSubmit(e){
         e.preventDefault();
-        fetch(`http://localhost:9393/users/${registerData.id}`, {
+        console.log(currentUser.id)
+        fetch(`http://localhost:9393/users/${currentUser.id}`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -66,7 +40,10 @@ function Signup({onAddUser, registerEntry}) {
             }),
           })
             .then((r) => r.json())
-            .then((registerData) => setRegisterData(registerData));
+            .then((r) => {
+                setCurrentUser(r);
+                setRegisterData(r);
+            });
     }
 
   
@@ -80,7 +57,7 @@ function Signup({onAddUser, registerEntry}) {
                 .then(() => (
                 handleRemove(registerData)
             ),
-            history.push("/users")
+            history.push("/users/registration")
             );
     }
 
@@ -89,37 +66,20 @@ function Signup({onAddUser, registerEntry}) {
             <h1>User info</h1>
             <form onSubmit={handleSubmit}>
             <h3 style={{color:"red"}}>{error}</h3>
-                <label>First name: </label>
-                <input
-                    type="text"
-                    onChange={handleChange}
-                    value={registerData.first_name}
-                    name="first_name"
-                    placeholder="Your first name here..."
-                /> 
-                {/* <br /> */}
-                <label>Last name: </label>
-                <input
-                    type="text"
-                    onChange={handleChange}
-                    value={registerData.last_name}
-                    name="last_name"
-                    placeholder="Your last name here..."
-                />
-                <br />
+                
                 <label>Department: </label>
                 <select 
                         name="department"
-                        value={registerData.department}
+                        value={registerData.department_id}
                         onChange={handleChange}
                  >
-                        <option >Department</option>
-                        <option value="Accounting">Accounting</option>
-                        <option value="Adminstration">Adminstration</option>
-                        <option value="Shipping">Shipping</option>
-                        <option value="Operation">Operation</option>
-                        <option value="Logistics">Logistics</option>
-                        <option value="Retails">Retails</option>
+                        <option hidden>Department</option>
+                        <option value="1">Accounting</option>
+                        <option value="2">Adminstration</option>
+                        <option value="3">Shipping</option>
+                        <option value="4">Operation</option>
+                        <option value="5">Logistics</option>
+                        <option value="6">Retails</option>
 
                 </select>
                 {/* <label>Email: </label> */}

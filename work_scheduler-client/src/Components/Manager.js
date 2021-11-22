@@ -1,43 +1,60 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useHistory } from "react-router-dom";
+import StaffList from './StaffList';
+
+function Manager({ users, currentUser, setCurrentUser, handleRemove, editUser  }) {
+    console.log(currentUser)
+    console.log(users)
+    const [editStaff, setEditStaff] = useState({});
+    const [error, setError] = useState(null);
+    const {id} = useParams()
+    const history = useHistory();
+    const depManager = currentUser.department_id
+    console.log(depManager)
+    console.log(id)
+    console.log(editStaff)
 
 
-function Manager({ currentUser, users }) {
-  const [manager, setManager] = useState("")
- 
-  useEffect(() => { 
-    const fetchProducts = async () => {
-    await fetch(`http://localhost:9393/managers/${users.id}`)
-    .then((r) => r.json())
-    .then((json) => {
-        setManager(json);
-    })
+    function handleDeleteSelf(e){
+      e.preventDefault();
+      console.log(id)
+      fetch(`http://localhost:9393/users/home/${id}`, {
+        method: "DELETE",
+        })
+            .then((r) => r.json())
+            .then(() => (
+              handleRemove(currentUser)
+        ),
+        history.push("/")
+        );
     }
-      fetchProducts();
-    }, [])
 
-
-
-const showStaffs = async () => { 
-  const staffs = manager.staffs.map((s) => {
-    <h3>name: {s.first_name} {s.last_name}</h3>;
-    <h3>department: {s.department}</h3>;
-    <h3>paid_rate: {s.paid_rate}</h3>;
+    let filteredUser = users.filter(function (user){
+        return user.department_id === depManager
+          
+    })
+    console.log(filteredUser)
     
-  });
-  return staffs;
-}
-  console.log(showStaffs)
-
-  function show(){
-    <p>"1"</p>
-    // return showStaffs;
-    // return <p>Object.values({manager.staffs})</p>
-  }
 
   return (
     <div>
-      {/* <h2>Manager Control Center</h2>
-      <p>{showStaffs}</p> */}
+      <h2>Manager Control Center</h2>
+      {filteredUser.map(u => 
+      <StaffList 
+      u={u} 
+      users={users}
+      currentUser={currentUser}
+      editUser={editUser} 
+      handleRemove={handleRemove} 
+      setCurrentUser={setCurrentUser}
+      editStaff={editStaff}
+      setEditStaff={setEditStaff}
+      depManager={depManager}
+      />
+      )}
+      <h1>Account Removal</h1>
+      <h2>Warning</h2>
+      <button type="submit" onClick={handleDeleteSelf}>Delete Account</button>
     </div>
   );
 }

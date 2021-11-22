@@ -1,14 +1,38 @@
 import React, { useState } from 'react';
 import { useHistory, Route } from "react-router-dom";
-import Signup from './Signup';
 
-function Registration ({users, setIsLoggedIn}) {
+function Registration ({users, setIsLoggedIn, setCurrentUser}) {
  
-    const [registerData, setRegisterData] = useState("");
+    const [registerData, setRegisterData] = useState({});
+    const [filterByUsername, setFilterByUsername] = useState({});
+    const [filterByEmail, setFilterByEmail] = useState({});
     const history = useHistory();
     const [error, setError] = useState(null);
-    console.log(users)
+    let username = registerData.username
+    let email = registerData.email
     
+    console.log(users)
+
+console.log(users.filter((user) => user.username === username))
+console.log(users.filter((user) => user.email === email))
+console.log(registerData)
+
+    // let checkUsername = users
+    //         .filter((user) => user.username === username)
+    //         .map((user) => setFilterByUsername(user))
+    
+    // let checkEmail = users
+    //         .filter((user) => user.username === username)
+    //         .map((user) => setFilterByUsername(user))
+    
+    // function authUser(){
+    //     if(!!checkUsername || !!checkEmail){
+    //         setError("username and/or email has been previously registered, please assign a new username and/or email.")
+    //     } else {
+    //         postMethod(registerData);
+    //     }
+    // }
+
     function handleChange(e){
         setRegisterData((prev) => {
            return {
@@ -20,9 +44,66 @@ function Registration ({users, setIsLoggedIn}) {
 
     function handleSubmit(e){
         e.preventDefault();
-        findUsers(registerData);
+        // console.log(checkUsername)
+        // console.log(checkEmail)
+        console.log(username)
+        console.log(email)
+        console.log(filterByUsername)
+        console.log(filterByEmail)
+        postMethod(registerData)
+        // findUsers(registerData);
         setIsLoggedIn(true);
     };
+
+    async function postMethod(){
+        let checkUsername = users.filter((user) => user.username === username)
+        let checkEmail = users.filter((user) => user.email === email)
+
+        if(checkUsername.username === username || checkEmail.email === email){
+            setError("username/email has been previously registered, please assign a new username/email.")
+        // } else if() {
+        //     setError("email has been previously registered, please assign a new username and/or email.")
+        } else {   
+        
+            if (registerData.password === registerData.password_confirmation){
+               await fetch("http://localhost:9393/users/registration", {
+                method: "POST",
+                headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify(registerData),
+                })
+                .then((r) => r.json())
+                .then(r => {
+                console.log(r)
+                setCurrentUser(r);
+                setRegisterData(r);
+                history.push(`/users/home/${r.id}`)
+                    
+                })} else {
+                    setError("Please check password!")
+                };}
+    };
+        
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
      async function findUsers() {
         console.log(registerData)
@@ -46,60 +127,38 @@ function Registration ({users, setIsLoggedIn}) {
         }
     }
 
-    function postMethod(){
-        console.log(registerData)
-        if (registerData.password === registerData.password_confirmation){
-        fetch("http://localhost:9393/users", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            },
-        body: JSON.stringify(registerData),
-        })
-        .then((r) => r.json())
-        .then(r => {
-            console.log(r)
-                setRegisterData(r);
-                history.push("/users/signup")
+    // async function postMethod(){
+    //     console.log(registerData)
+    //     if (registerData.password === registerData.password_confirmation){
+    //    await fetch("http://localhost:9393/users/registration", {
+    //     method: "POST",
+    //     headers: {
+    //         "Accept": "application/json",
+    //         "Content-Type": "application/json",
+    //         },
+    //     body: JSON.stringify(registerData),
+    //     })
+    //     .then((r) => r.json())
+    //     .then(r => {
+    //         console.log(r)
+    //         setCurrentUser(r);
+    //         setRegisterData(r);
+    //         history.push(`/users/home/${r.id}`)
                 
-            })} else {
-        setError("Please check password!")
-            };
-    };
+    //         })} else {
+    //             setError("Please check password!")
+    //         };
+    // };
         
     
-    console.log(registerData);
+    // console.log(registerData);
+    // console.log(checkEmail)
+    // console.log(checkUsername)
     
-    // async function findUsers(currentUser) {
-    //     const checkUser = await fetch(`http://localhost:9393/registration/${currentUser.username}`)
-    //     if (checkUser.status == 200){
-    //         setError("username has been previously registered, please assign a new username or email.")
-    //     } else  {
-    //        await fetch("http://localhost:9393/registration", {
-    //             method: "POST",
-    //             headers: {
-    //                 "Accept": "application/json",
-    //                 "Content-Type": "application/json",
-    //                 },
-    //             body: JSON.stringify(registerData),
-    //             })
-    //             .then((r) => r.json())
-    //             .then(registerData => {
-    //                 if (currentUser.password == currentUser.password_confirmation){
-    //                     setRegisterData(registerData);
-    //                     console.log(registerData);
-                  
-    //                     // history.push("/registration/signup")
-    //                 } else {
-    //                     setError("Please check password!")
-    //                 };
-    //                 });
-    //     }
-    // }
 
     return (
         <div>
+            {/* {checkUsername} */}
             <form onSubmit={handleSubmit}>
             <h3 style={{color:"red"}}>{error}</h3>
             <label>Username: </label>
@@ -136,6 +195,23 @@ function Registration ({users, setIsLoggedIn}) {
                     placeholder="Re-enter your password here..."
                 />
                 <br />
+                <label>First name: </label>
+                <input
+                    type="text"
+                    onChange={handleChange}
+                    value={registerData.first_name}
+                    name="first_name"
+                    placeholder="Your first name here..."
+                /> 
+                <label>Last name: </label>
+                <input
+                    type="text"
+                    onChange={handleChange}
+                    value={registerData.last_name}
+                    name="last_name"
+                    placeholder="Your last name here..."
+                />
+                <br />
                 <label>Position: </label>
                 <select
                     type="checkbox"
@@ -147,14 +223,24 @@ function Registration ({users, setIsLoggedIn}) {
                 <option value={true}>Manager</option>
                 <option value={false}>Staff</option>
                 </select>
-                
+
+                <label>Department: </label>
+                <select 
+                        name="department_id"
+                        value={registerData.department_id}
+                        onChange={handleChange}
+                 >
+                        <option hidden>Department</option>
+                        <option value={1}>Accounting</option>
+                        <option value={2}>Shipping</option>
+                        <option value={3}>Operation</option>
+                        <option value={4}>Logistics</option>
+                        <option value={5}>Retails</option>
+                        <option value={6}>Adminstration</option>
+                </select>
                 <button type="submit">Register</button>
                 
             </form>
-
-            <Route path="/registration/signup">
-              <Signup registerEntry={registerData}/>
-            </Route>
         
         </div>
 

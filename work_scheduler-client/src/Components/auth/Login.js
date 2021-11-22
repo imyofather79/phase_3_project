@@ -1,41 +1,37 @@
 import React, { useState } from 'react';
-import { Route, useHistory } from "react-router-dom";
-import Users from '../Users';
+import { useHistory } from "react-router-dom";
 
 
-function Login({setIsLoggedIn, onAddUser}) {
+function Login({ setIsLoggedIn, setCurrentUser }) {
 
     const history = useHistory();
-    const [user, setUser] = useState("");
-    const [registerData, setRegisterData] = useState("");
+    const [login, setLogin] = useState([]);
     const [error, setError] = useState(null);
     
     function handleChange(e){
-        setUser({
-            ...user,
+        setLogin({
+            ...login,
             [e.target.name]: e.target.value
         });
     }
 
    async function handleSubmit(e){
         e.preventDefault();
-        let currentUser = user
-            findCurrentUser(currentUser)
+        findCurrentUser(login)
     }
 
-    async function findCurrentUser(currentUser) {
-        const response = await fetch(`http://localhost:9393/users/${currentUser.username}`)
+    async function findCurrentUser() {
+        const response = await fetch(`http://localhost:9393/users/${login.username}`)
         if (response.status === 401){
             setError("That user doesn't exist, try again or sign up for an account!")
         } else  {
-            fetch(`http://localhost:9393/users/${currentUser.username}`)
-                .then((r) => r.json())
-                .then(registerData => {
-                if (registerData.password === currentUser.password){
-                    setRegisterData(registerData);
+            fetch(`http://localhost:9393/users/${login.username}`)
+            .then((r) => r.json())
+            .then(r => {
+                if (r.password === login.password){
                     setIsLoggedIn(true);
-                    onAddUser(registerData);
-                    history.push(`/users/home/${registerData.id}`)
+                    setCurrentUser(r);
+                    history.push(`/users/home/${r.id}`)
                     } else {
                         setError("The password is incorrect. Please try again!")
                     };
@@ -43,9 +39,6 @@ function Login({setIsLoggedIn, onAddUser}) {
         }
 }
 
-console.log(registerData)
-console.log(user)
-let signUpUserData = registerData;
 
 return (
     <div>
@@ -55,7 +48,7 @@ return (
             <input
                 type="text"
                 onChange={handleChange}
-                value={user.username}
+                value={login.username}
                 name="username"
                 placeholder="Your username here..."
                 autoFocus={true}
@@ -64,19 +57,13 @@ return (
             <input
                 type="password"
                 onChange={handleChange}
-                value={user.password}
+                value={login.password}
                 name="password"
                 placeholder="Your password here..."
                 autoFocus={true}
             />
             <button type="submit">Login</button>
         </form>
-        <Route path="/users/home/:id">
-            <Users 
-            registerData={registerData}
-            signUpUserData={signUpUserData}
-            />  
-        </Route>
     </div>
 );
 }
