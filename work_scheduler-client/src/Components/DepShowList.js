@@ -1,12 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import { useParams, useHistory } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 
 function DepShowList() {
 
     const [currentDep, setCurrentDep] = useState("");
     const {department} = useParams()
-    const history = useHistory()
 
     useEffect(() => { 
         fetch(`http://localhost:9393/departments/${department}`)

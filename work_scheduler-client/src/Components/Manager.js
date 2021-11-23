@@ -2,17 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from "react-router-dom";
 import StaffList from './StaffList';
 
-function Manager({ users, currentUser, setCurrentUser, handleRemove, editUser  }) {
-    console.log(currentUser)
-    console.log(users)
-    const [editStaff, setEditStaff] = useState({});
-    const [error, setError] = useState(null);
+function Manager({ users, currentUser, handleRemove }) {
     const {id} = useParams()
     const history = useHistory();
     const depManager = currentUser.department_id
-    console.log(depManager)
-    console.log(id)
-    console.log(editStaff)
 
 
     function handleDeleteSelf(e){
@@ -29,27 +22,20 @@ function Manager({ users, currentUser, setCurrentUser, handleRemove, editUser  }
         );
     }
 
-    let filteredUser = users.filter(function (user){
-        return user.department_id === depManager
-          
+    let filteredUsers = users.filter(function (user){
+      console.log(user.department_id)
+        return user.department_id === depManager 
     })
-    console.log(filteredUser)
+    console.log(filteredUsers)
     
 
   return (
     <div>
       <h2>Manager Control Center</h2>
-      {filteredUser.map(u => 
+      {filteredUsers.map(u => 
       <StaffList 
       u={u} 
-      users={users}
-      currentUser={currentUser}
-      editUser={editUser} 
       handleRemove={handleRemove} 
-      setCurrentUser={setCurrentUser}
-      editStaff={editStaff}
-      setEditStaff={setEditStaff}
-      depManager={depManager}
       />
       )}
       <h1>Account Removal</h1>

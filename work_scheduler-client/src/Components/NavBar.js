@@ -1,7 +1,16 @@
 import React from 'react';
 import { NavLink} from "react-router-dom";
 
-function NavBar() {
+function NavBar({ isLoggedIn, setIsLoggedIn }) {
+  function showLoggedIn(){
+    if(!!isLoggedIn){
+      setIsLoggedIn(true)
+      return "Logoff"
+    } else {
+      setIsLoggedIn(false)
+      return "Login"
+    }
+  }
 
   return (
     <nav>
@@ -12,10 +21,10 @@ function NavBar() {
             Departments
           </NavLink>
           <NavLink to="/users/registration" exact>
-            Register
+            Register 
           </NavLink>
           <NavLink to="/users/login" exact>
-            Login/Logoff
+            {showLoggedIn()}
           </NavLink> 
     </nav>
   );

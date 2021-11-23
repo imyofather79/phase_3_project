@@ -25,29 +25,29 @@ class UserController < Sinatra::Base
         user.to_json(:include => :department)
   end
 
-  #Validator with username
-  get '/users/:username' do
-    user = User.find_by(username: params[:username])
-    if user 
-      status 200
-      user.to_json(:include => :department)
-    else 
-      status 401
-      { errors: "user doesn't exist" }.to_json
-    end
-  end
+  # #Validator with username
+  # get '/users/:username' do
+  #   user = User.find_by(username: params[:username])
+  #   if user 
+  #     status 200
+  #     user.to_json(:include => :department)
+  #   else 
+  #     status 401
+  #     { errors: "user doesn't exist" }.to_json
+  #   end
+  # end
 
-  #Validator with email
-  get '/user/:format?' do
+  # #Validator with email
+  # get '/user/:format?' do
     
-    user = User.find_by(email: params[:email])
-    if user
-      status 200
-      user.to_json(:include => :department)
-    else 
-      status 401
-    end
-  end
+  #   user = User.find_by(email: params[:email])
+  #   if user
+  #     status 200
+  #     user.to_json(:include => :department)
+  #   else 
+  #     status 401
+  #   end
+  # end
 
   #update
   patch '/users/:id' do

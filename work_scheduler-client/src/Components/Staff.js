@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-function Staff({ users, currentUser }) {
-  console.log(currentUser)
-  console.log(users)
+function Staff({ currentUser }) {
+
 
   return (
     <div>

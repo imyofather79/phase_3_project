@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
 
 
-function Login({ setIsLoggedIn, setCurrentUser }) {
+function Login({ users, setIsLoggedIn, setCurrentUser }) {
 
     const history = useHistory();
-    const [login, setLogin] = useState([]);
+    const [login, setLogin] = useState({ });
     const [error, setError] = useState(null);
-    
+
     function handleChange(e){
         setLogin({
             ...login,
@@ -19,25 +19,41 @@ function Login({ setIsLoggedIn, setCurrentUser }) {
         e.preventDefault();
         findCurrentUser(login)
     }
+    async function findCurrentUser(){
+        let checkUsername = users.filter((user) => user.username === login.username)
+        console.log(checkUsername[0])
+        if(checkUsername[0].username !== login.username){
+            setError("user does not exist.")
+        } else {   
+            if (checkUsername[0].password === login.password){
+                setIsLoggedIn(true);
+                setCurrentUser(checkUsername[0]);
+                history.push(`/users/home/${checkUsername[0].id}`)
+                } else {
+                    setIsLoggedIn(false)
+                    setError("Please check password!")
+                };}
+    };
 
-    async function findCurrentUser() {
-        const response = await fetch(`http://localhost:9393/users/${login.username}`)
-        if (response.status === 401){
-            setError("That user doesn't exist, try again or sign up for an account!")
-        } else  {
-            fetch(`http://localhost:9393/users/${login.username}`)
-            .then((r) => r.json())
-            .then(r => {
-                if (r.password === login.password){
-                    setIsLoggedIn(true);
-                    setCurrentUser(r);
-                    history.push(`/users/home/${r.id}`)
-                    } else {
-                        setError("The password is incorrect. Please try again!")
-                    };
-                })
-        }
-}
+
+//     async function findCurrentUser() {
+//         const response = await fetch(`http://localhost:9393/users/${login.username}`)
+//         if (response.status === 401){
+//             setError("That user doesn't exist, try again or sign up for an account!")
+//         } else  {
+//             fetch(`http://localhost:9393/users/${login.username}`)
+//             .then((r) => r.json())
+//             .then(r => {
+//                 if (r.password === login.password){
+//                     setIsLoggedIn(true);
+//                     setCurrentUser(r);
+//                     history.push(`/users/home/${r.id}`)
+//                     } else {
+//                         setError("The password is incorrect. Please try again!")
+//                     };
+//                 })
+//         }
+// }
 
 
 return (

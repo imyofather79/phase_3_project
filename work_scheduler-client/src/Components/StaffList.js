@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {  useHistory } from "react-router-dom";
 
 
@@ -42,17 +42,16 @@ function StaffList({ u, handleRemove }) {
               .then((r) => r.json())
               .then(() => (
                 handleRemove(u)
-          ),
-            history.push("/")
-
-          );
+                ),
+                    history.push("/")
+                );
       }
-      console.log(u.id)
+      
 
   return (
     <div>
             <form onSubmit={handleSubmit}>
-                <label>Paid rate for {u.first_name} {u.last_name}</label>
+                <label>Paid rate for {u.first_name} {u.last_name} - {u.paid_rate}</label>
                 <br/>
                 <input
                     type="text"

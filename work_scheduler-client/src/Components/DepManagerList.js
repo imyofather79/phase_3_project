@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from "react-router-dom";
 
- function DepManagerList({users, department, departments, setDepartments}) {
+ function DepManagerList({ department }) {
 
   function showManager(){
     let depManager = department.users.map((u) => {

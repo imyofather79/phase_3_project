@@ -1,37 +1,13 @@
 import React, { useState } from 'react';
-import { useHistory, Route } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 function Registration ({users, setIsLoggedIn, setCurrentUser}) {
  
     const [registerData, setRegisterData] = useState({});
-    const [filterByUsername, setFilterByUsername] = useState({});
-    const [filterByEmail, setFilterByEmail] = useState({});
     const history = useHistory();
     const [error, setError] = useState(null);
-    let username = registerData.username
-    let email = registerData.email
-    
-    console.log(users)
 
-console.log(users.filter((user) => user.username === username))
-console.log(users.filter((user) => user.email === email))
-console.log(registerData)
-
-    // let checkUsername = users
-    //         .filter((user) => user.username === username)
-    //         .map((user) => setFilterByUsername(user))
     
-    // let checkEmail = users
-    //         .filter((user) => user.username === username)
-    //         .map((user) => setFilterByUsername(user))
-    
-    // function authUser(){
-    //     if(!!checkUsername || !!checkEmail){
-    //         setError("username and/or email has been previously registered, please assign a new username and/or email.")
-    //     } else {
-    //         postMethod(registerData);
-    //     }
-    // }
 
     function handleChange(e){
         setRegisterData((prev) => {
@@ -44,22 +20,15 @@ console.log(registerData)
 
     function handleSubmit(e){
         e.preventDefault();
-        // console.log(checkUsername)
-        // console.log(checkEmail)
-        console.log(username)
-        console.log(email)
-        console.log(filterByUsername)
-        console.log(filterByEmail)
         postMethod(registerData)
-        // findUsers(registerData);
         setIsLoggedIn(true);
     };
 
     async function postMethod(){
-        let checkUsername = users.filter((user) => user.username === username)
-        let checkEmail = users.filter((user) => user.email === email)
+        let checkUsername = users.filter((user) => user.username === registerData.username).toString()
+        let checkEmail = users.filter((user) => user.email === registerData.email).toString()
 
-        if(checkUsername.username === username || checkEmail.email === email){
+        if(!!checkUsername|| !!checkEmail){
             setError("username/email has been previously registered, please assign a new username/email.")
         // } else if() {
         //     setError("email has been previously registered, please assign a new username and/or email.")
@@ -80,85 +49,14 @@ console.log(registerData)
                 setCurrentUser(r);
                 setRegisterData(r);
                 history.push(`/users/home/${r.id}`)
-                    
                 })} else {
                     setError("Please check password!")
                 };}
     };
-        
-   
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     async function findUsers() {
-        console.log(registerData)
-        const checkUser = await fetch(`http://localhost:9393/users/${registerData.id}`)
-        console.log(checkUser)
-        if (checkUser.status === 200){
-            setError("username has been previously registered, please assign a new username or email.")
-        } else { 
-            findEmail(registerData);
-        }
-    };
-
-    async function findEmail() {
-        console.log(registerData)
-        console.log(registerData.username)
-        const checkUser = await fetch(`http://localhost:9393/users/?email=${registerData.email}`)
-        if (checkUser.status === 200){
-            setError("email has been previously registered, please assign a new email.")
-        } else  {
-            postMethod(registerData);
-        }
-    }
-
-    // async function postMethod(){
-    //     console.log(registerData)
-    //     if (registerData.password === registerData.password_confirmation){
-    //    await fetch("http://localhost:9393/users/registration", {
-    //     method: "POST",
-    //     headers: {
-    //         "Accept": "application/json",
-    //         "Content-Type": "application/json",
-    //         },
-    //     body: JSON.stringify(registerData),
-    //     })
-    //     .then((r) => r.json())
-    //     .then(r => {
-    //         console.log(r)
-    //         setCurrentUser(r);
-    //         setRegisterData(r);
-    //         history.push(`/users/home/${r.id}`)
-                
-    //         })} else {
-    //             setError("Please check password!")
-    //         };
-    // };
-        
-    
-    // console.log(registerData);
-    // console.log(checkEmail)
-    // console.log(checkUsername)
-    
 
     return (
         <div>
-            {/* {checkUsername} */}
             <form onSubmit={handleSubmit}>
             <h3 style={{color:"red"}}>{error}</h3>
             <label>Username: </label>

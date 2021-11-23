@@ -1,11 +1,7 @@
 import React from 'react'
-import { Redirect } from 'react-router';
 
- function Home( {isLoggedIn} ) {
+ function Home() {
   
-
-    // if(!isLoggedIn) return <Redirect to="/" />
-
     return (
         <div>
             <h1>Welcome to my portal!</h1>
